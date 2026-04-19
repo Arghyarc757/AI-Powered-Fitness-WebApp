@@ -1,9 +1,6 @@
-# Please Note
-
-This is a **fun personal project** exploring AI-powered fitness recommendations.  
-It demonstrates a microservices architecture with both backend and frontend components.
-
 # AI-Powered Fitness Tracker
+
+![Application Demo](demo.gif)
 
 An ongoing microservices-based fitness tracking application that leverages AI to provide personalized workout recommendations and insights.
 
@@ -27,6 +24,51 @@ This project follows a **microservices architecture** pattern with the following
 - **Frontend**: React + Vite
 - **Message Queue**: RabbitMQ (Docker)
 - **Authentication**: Keycloak (Docker)
+
+```mermaid
+graph TD
+    Client[Frontend React + Vite] -->|Requests| Gateway[API Gateway :8080]
+    
+    subgraph Authentication
+        Gateway -->|OAuth2 / OIDC| Keycloak[Keycloak :8181]
+    end
+    
+    subgraph Service Management
+        Eureka[Eureka Discovery :8761]
+        Config[Config Server :8888]
+    end
+    
+    subgraph Microservices
+        Gateway --> UserSvc[User Service :8081]
+        Gateway --> ActSvc[Activity Service :8082]
+        Gateway --> AISvc[AI Service :8083]
+        
+        UserSvc -.Registers.-> Eureka
+        ActSvc -.Registers.-> Eureka
+        AISvc -.Registers.-> Eureka
+        Gateway -.Registers.-> Eureka
+        
+        UserSvc -.Configures.-> Config
+        ActSvc -.Configures.-> Config
+        AISvc -.Configures.-> Config
+        Gateway -.Configures.-> Config
+    end
+    
+    subgraph Data Layer
+        UserSvc --> Postgre[(PostgreSQL)]
+        ActSvc --> MongoAct[(MongoDB: Activity)]
+        AISvc --> MongoRec[(MongoDB: Recommendation)]
+    end
+    
+    subgraph Async Communication
+        ActSvc -->|Publish Event| Rabbit[RabbitMQ]
+        Rabbit -->|Consume Event| AISvc
+    end
+    
+    subgraph External
+        AISvc -->|API Calls| Gemini[Google Gemini AI]
+    end
+```
 
 ## 📦 Services Overview
 
@@ -286,31 +328,44 @@ AIPoweredFitness/
 - Some services use Java 25 (experimental), Gateway uses Java 21
 - Keycloak and RabbitMQ are run via Docker
 - Database credentials are in config files (change for production)
+- Gemini API key is exposed in `geminiapi.env` (use environment variables in production)
+
+## 🔍 What Needs Clarification
+
+1. **Docker Compose**: No `docker-compose.yml` file found. Are Keycloak and RabbitMQ started manually or is there a compose file elsewhere?
+
+2. **Keycloak Configuration**: 
+   - Exact realm configuration details
+   - Client configuration specifics
+   - User roles and permissions setup
+
+3. **Database Setup**:
+   - Are databases created automatically or manually?
+   - Any initialization scripts?
+
+4. **Environment Variables**:
+   - How are environment variables managed across services?
+   - Production configuration strategy?
+
+5. **Service Ports**: All services use fixed ports - any load balancing or scaling strategy?
+
+6. **Error Handling**: Error handling and logging strategy across services
+
+7. **Testing**: Test coverage and testing strategy
+
+8. **Deployment**: Deployment strategy and CI/CD pipeline (if any)
 
 ## 🐛 Known Issues / TODO
 
-- FRONEND is not completed
+- Frontend `ActivityDetail.jsx` has a bug: uses `activity.improvements` instead of `improvement` in map function (line 52)
+- Missing error boundaries in frontend
+- No health check endpoints documented
+- API Gateway security config has commented actuator endpoint
 
-## **LICENSE (MIT)**
-```text
-MIT License
+## 📝 License
 
-Copyright (c) 2025 Arghya Roy Chaudhury
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## 👥 Contributors
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+[Add contributors here]
