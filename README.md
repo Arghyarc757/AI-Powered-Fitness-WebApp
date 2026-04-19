@@ -355,12 +355,12 @@ AIPoweredFitness/
 
 8. **Deployment**: Deployment strategy and CI/CD pipeline (if any)
 
-## 🐛 Known Issues / TODO
+## 🚀 Future Enhancements & Roadmap
 
-- Frontend `ActivityDetail.jsx` has a bug: uses `activity.improvements` instead of `improvement` in map function (line 52)
-- Missing error boundaries in frontend
-- No health check endpoints documented
-- API Gateway security config has commented actuator endpoint
+- **Advanced System Observability**: Implement centralized logging and distributed tracing across all microservices to enhance system monitoring and telemetry.
+- **Frontend Resilience**: Introduce global React Error Boundaries to gracefully handle exceptions and ensure a seamless, uninterrupted user experience.
+- **Production-Grade SecOps**: Finalize API Gateway configurations and Actuator endpoints, migrating from development presets to strict production-level security standards.
+- **Health Verification**: Expose and thoroughly document comprehensive health-check mechanisms across services for automated container orchestration and self-healing.
 
 ## 📝 License
 
@@ -368,4 +368,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Contributors
 
-[Add contributors here]
+Arghya Roy Chaudhury
